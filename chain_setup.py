@@ -2,15 +2,20 @@ import os
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
+from langchain_community.chat_message_histories import ChatMessageHistory
+from langchain_core.runnables.history import RunnableWithMessageHistory
 
-# Base templates for vector store prompts
+ephemeral_chat_history = ChatMessageHistory()
+
+
 prompt = ChatPromptTemplate.from_messages(
     [
         (
             "system",
             "You are a helpful assistant. Answer all questions to the best of your ability.",
         ),
-        ("placeholder", "{messages}"),
+        ("placeholder", "{chat_history}"),
+        ("human", "{input}"),
     ]
 )
 
@@ -23,4 +28,9 @@ model = ChatOpenAI(
 parser = StrOutputParser()
 
 # Chain initialization
-chain = prompt | model | parser
+chain = RunnableWithMessageHistory(
+    prompt | model | parser,
+    lambda session_id: ephemeral_chat_history,
+    input_messages_key="input",
+    history_messages_key="chat_history",
+)

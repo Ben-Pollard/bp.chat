@@ -1,6 +1,6 @@
 """Streamlit app for interacting with an LLM"""
 import streamlit as st
-from chain_module import chain  # Import the chain from the new module
+from chain_setup import chain  # Import the chain from the new module
 
 def main():
     st.title("LLM Chain Invocation App")
@@ -10,7 +10,7 @@ def main():
 
     if st.button("Invoke Chain"):
         # Invoke the chain with user input
-        result = chain.invoke({"messages": user_input})
+        result = chain.invoke({"input": user_input}, {"configurable": {"session_id": "unused"}})
 
         # Display the result
         st.write("Response:", result)
