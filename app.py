@@ -9,11 +9,14 @@ def main():
     user_input = st.text_area("Enter your message:", "")
 
     if st.button("Invoke Chain"):
-        # Invoke the chain with user input
-        result = chain.invoke({"input": user_input}, {"configurable": {"session_id": "unused"}})
+        # Stream the chain with user input
+        response_stream = chain.stream({"input": user_input}, {"configurable": {"session_id": "unused"}})
 
-        # Display the result
-        st.write("Response:", result)
+        # Display the streamed result
+        result = ""
+        for chunk in response_stream:
+            result += chunk
+            st.write("Response:", result)
 
 if __name__ == "__main__":
     main()
