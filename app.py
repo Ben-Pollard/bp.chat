@@ -19,22 +19,23 @@ prompt = ChatPromptTemplate.from_messages(
 model = ChatOpenAI(
     temperature=0,
     model_name="gpt-3.5-turbo",
-    openai_api_key=os.environ["OPENAI_KEY"],
+    openai_api_key=os.environ["OPENAI_API_KEY"],
 )
 
 parser = StrOutputParser()
 
 chain = prompt | model | parser
+
 def main():
     st.title("LLM Chain Invocation App")
-    
+
     # Input text box for user messages
     user_input = st.text_area("Enter your message:", "")
-    
+
     if st.button("Invoke Chain"):
         # Invoke the chain with user input
         result = chain.invoke({"messages": user_input})
-        
+
         # Display the result
         st.write("Response:", result)
 
