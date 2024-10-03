@@ -15,7 +15,15 @@ def main():
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = []
 
-    
+    # Display chat history
+    for message in st.session_state.chat_history:
+        if isinstance(message, HumanMessage):
+            with st.chat_message("Human"):
+                st.markdown(message.content)
+        elif isinstance(message, AIMessage):
+            with st.chat_message("AI"):
+                st.markdown(message.content)
+
     # Input for user messages and handle response streaming
     user_input = st.chat_input("Your message:")
     if user_input is not None and user_input != "":
