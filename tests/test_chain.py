@@ -1,3 +1,4 @@
+"""Tests for the outer chat chain"""
 import unittest
 from chain_setup import chain
 
