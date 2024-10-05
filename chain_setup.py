@@ -1,5 +1,6 @@
 """The outer chat chain"""
 import os
+from typing import Optional, Any, Iterator
 import jsonpatch
 from langchain.schema.runnable import RunnableGenerator
 from langchain_openai import ChatOpenAI
@@ -12,7 +13,6 @@ from langchain_core.runnables.utils import Input, Output
 from langchain_core.globals import set_debug
 from langchain_community.chat_message_histories import ChatMessageHistory
 from pydantic import BaseModel, Field
-from typing import Optional, Any, Iterator
 
 set_debug(True)
 
@@ -61,22 +61,22 @@ class StreamParser(Runnable):
 
     def stream(
         self,
-        input: Input,
+        inputs: Input,
         config: Optional[RunnableConfig] = None,
         **kwargs: Optional[Any]
     ) -> Iterator[Output]:
 
         generator = RunnableGenerator(self.json_diff_extractor)
-        return generator.stream(input)
+        return generator.stream(inputs)
 
-    def invoke(self, input: Input, config: Optional[RunnableConfig] = None) -> Output:
-        return input
+    def invoke(self, inputs: Input, config: Optional[RunnableConfig] = None) -> Output:
+        return inputs
 
-    def json_diff_extractor(self, input: Input):
+    def json_diff_extractor(self, inputs: Input):
         """Extract diff of chosen field from jsonpatch stream"""
         current_data = {}
         previous_str = ""
-        for op in input:
+        for op in inputs:
             json_patch = jsonpatch.JsonPatch(op)
             current_data = json_patch.apply(current_data)
             if self.field_to_extract in current_data:
