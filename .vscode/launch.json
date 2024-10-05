@@ -10,6 +10,18 @@
       "console": "integratedTerminal",
       "justMyCode": false,
       "env": {"PYTEST_ADDOPTS": "--no-cov"}
-    }
+    },
+    {
+      "name": "Python:Streamlit",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "streamlit",
+      "args": [
+          "run",
+          "${file}",
+          "--server.port",
+          "2000"
+      ]
+  }
   ]
 }
