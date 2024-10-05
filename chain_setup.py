@@ -3,7 +3,7 @@ import os
 from langchain_openai import ChatOpenAI
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import PydanticOutputParser
+from langchain_core.output_parsers import JsonOutputParser, PydanticOutputParser
 from pydantic import BaseModel, Field
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain.schema.runnable import RunnableGenerator
@@ -20,7 +20,8 @@ class ChatCoT(BaseModel):
     strategy: str = Field(description="Your strategy for engaging the user")
     utterance: str = Field(description="Your response to the user")
 
-parser = PydanticOutputParser(pydantic_object=ChatCoT)
+pydantic_parser = PydanticOutputParser(pydantic_object=ChatCoT)
+json_diff_parser = JsonOutputParser(diff=True)
 
 prompt = ChatPromptTemplate.from_messages(
     [
@@ -28,7 +29,7 @@ prompt = ChatPromptTemplate.from_messages(
         ("placeholder", "{chat_history}"),
         ("human", "{input}"),
     ]
-).partial(format_instructions=parser.get_format_instructions())
+).partial(format_instructions=json_diff_parser.get_format_instructions())
 
 model = ChatOpenAI(
     temperature=0,
@@ -38,14 +39,13 @@ model = ChatOpenAI(
 
 # Chain initialization
 chain_with_message_history = RunnableWithMessageHistory(
-    prompt | model,
+    prompt | model | json_diff_parser,
     lambda session_id: ephemeral_chat_history,
     input_messages_key="input",
     history_messages_key="chat_history",
 )
 
-def _transform(input_stream):
-    for chunk in input_stream:
-        yield chunk['output']
+def jsonpatch_extractor(input_stream, field):
+    """Extract utterance as a text stream from the json diff stream"""
 
-chain = chain_with_message_history | RunnableGenerator(_transform)
+chain = chain_with_message_history | RunnableGenerator(jsonpatch_extractor)

@@ -16,5 +16,22 @@ class TestChainInvocation(unittest.TestCase):
         self.assertIsInstance(result, str)
         self.assertTrue(len(result) > 0)
 
+    def test_json_patch_streaming(self):
+        """Unittest for streaming json parser"""
+
+        patches = [
+            {"op": "add", "path": "/reasoning", "value": ""}, 
+            {"op": "replace", "path": "/reasoning", "value": "The "},
+            {"op": "replace", "path": "/reasoning", "value": "The chatbot "},
+            {"op": "replace", "path": "/reasoning", "value": "The chatbot evaluates "},
+            {"op": "replace", "path": "/reasoning", "value": "The chatbot evaluates user inputs."},
+            {"op": "add", "path": "/utterance", "value": ""},
+            {"op": "replace", "path": "/utterance", "value": "How "},
+            {"op": "replace", "path": "/utterance", "value": "How can "},
+            {"op": "replace", "path": "/utterance", "value": "How can I "},
+            {"op": "replace", "path": "/utterance", "value": "How can I help "},
+            {"op": "replace", "path": "/utterance", "value": "How can I help you today?"}
+]
+
 if __name__ == "__main__":
     unittest.main()
