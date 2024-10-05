@@ -24,7 +24,7 @@ class TestChainInvocation(unittest.TestCase):
             [{"op": "replace", "path": "/reasoning", "value": "The "}],
             [{"op": "replace", "path": "/reasoning", "value": "The chatbot "}],
             [{"op": "replace", "path": "/reasoning", "value": "The chatbot evaluates "}],
-            [{"op": "replace", "path": "/reasoning", "value": "The chatbot evaluates user inputs."}],
+            [{"op": "replace", "path": "/reasoning", "value": "The chatbot evaluates user inputs."}], # pylint: disable=C0301
             [{"op": "add", "path": "/utterance", "value": ""}],
             [{"op": "replace", "path": "/utterance", "value": "How "}],
             [{"op": "replace", "path": "/utterance", "value": "How can "}],
@@ -35,7 +35,7 @@ class TestChainInvocation(unittest.TestCase):
 
         # Use the jsonpatch_extractor to simulate streaming
         parser = StreamParser('utterance')
-        utterance_stream = parser.jsonpatch_extractor(patches)
+        utterance_stream = parser.json_diff_extractor(patches)
 
         # Collect the streamed utterance
         collected_stream = "".join([i for i in utterance_stream])

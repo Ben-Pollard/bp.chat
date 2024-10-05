@@ -55,28 +55,29 @@ chain_with_message_history = RunnableWithMessageHistory(
 )
 
 class StreamParser(Runnable):
+    """Runnable to selectively apply a jsonpatch parser when streaming"""
 
     def __init__(self, field_to_extract):
         self.field_to_extract = field_to_extract
 
     def stream(
         self,
-        inputs: Input,
+        input: Input, # pylint: disable=W0622
         config: Optional[RunnableConfig] = None,
         **kwargs: Optional[Any]
     ) -> Iterator[Output]:
 
         generator = RunnableGenerator(self.json_diff_extractor)
-        return generator.stream(inputs)
+        return generator.stream(input)
 
-    def invoke(self, inputs: Input, config: Optional[RunnableConfig] = None) -> Output:
-        return inputs
+    def invoke(self, input: Input, config: Optional[RunnableConfig] = None) -> Output: # pylint: disable=W0622
+        return input
 
-    def json_diff_extractor(self, inputs: Input):
+    def json_diff_extractor(self, input: Input): # pylint: disable=W0622
         """Extract diff of chosen field from jsonpatch stream"""
         current_data = {}
         previous_str = ""
-        for op in inputs:
+        for op in input:
             json_patch = jsonpatch.JsonPatch(op)
             current_data = json_patch.apply(current_data)
             if self.field_to_extract in current_data:

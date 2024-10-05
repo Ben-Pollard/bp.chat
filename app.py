@@ -4,8 +4,8 @@ This app allows users to input messages and receive responses from a language mo
 The responses are streamed in real-time to the display.
 """
 import streamlit as st
-from chain_setup import chain  # Import the chain from the new module
 from langchain_core.messages import AIMessage, HumanMessage
+from chain_setup import chain
 
 def main():
     """Main function to run the Streamlit app."""
