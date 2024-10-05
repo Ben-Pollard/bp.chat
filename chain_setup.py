@@ -45,7 +45,15 @@ chain_with_message_history = RunnableWithMessageHistory(
     history_messages_key="chat_history",
 )
 
+import jsonpatch
+
 def jsonpatch_extractor(input_stream, field):
     """Extract utterance as a text stream from the json diff stream"""
+    current_data = {}
+    for patch in input_stream:
+        json_patch = jsonpatch.JsonPatch([patch])
+        current_data = json_patch.apply(current_data)
+        if field in current_data:
+            yield current_data[field]
 
 chain = chain_with_message_history | RunnableGenerator(jsonpatch_extractor)

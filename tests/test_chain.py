@@ -31,7 +31,18 @@ class TestChainInvocation(unittest.TestCase):
             {"op": "replace", "path": "/utterance", "value": "How can I "},
             {"op": "replace", "path": "/utterance", "value": "How can I help "},
             {"op": "replace", "path": "/utterance", "value": "How can I help you today?"}
-]
+        ]
+
+        # Use the jsonpatch_extractor to simulate streaming
+        utterance_stream = jsonpatch_extractor(patches, "utterance")
+
+        # Collect the streamed utterance
+        streamed_utterance = ""
+        for part in utterance_stream:
+            streamed_utterance = part
+
+        # Assert the final streamed utterance is as expected
+        self.assertEqual(streamed_utterance, "How can I help you today?")
 
 if __name__ == "__main__":
     unittest.main()
