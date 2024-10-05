@@ -1,6 +1,6 @@
 """Tests for the outer chat chain"""
 import unittest
-from chain_setup import chain
+from chain_setup import chain, jsonpatch_extractor
 
 class TestChainInvocation(unittest.TestCase):
     """Unit test for chain invocation."""
