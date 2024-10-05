@@ -1,12 +1,20 @@
 """The outer chat chain"""
 import os
+import jsonpatch
+from langchain.schema.runnable import RunnableGenerator
 from langchain_openai import ChatOpenAI
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import JsonOutputParser, PydanticOutputParser
-from pydantic import BaseModel, Field
+from langchain_core.runnables.base import Runnable
+from langchain_core.runnables.config import RunnableConfig
+from langchain_core.runnables.utils import Input, Output
+from langchain_core.globals import set_debug
 from langchain_community.chat_message_histories import ChatMessageHistory
-from langchain.schema.runnable import RunnableGenerator
+from pydantic import BaseModel, Field
+from typing import Optional, Any, Iterator
+
+set_debug(True)
 
 ephemeral_chat_history = ChatMessageHistory()
 
@@ -29,12 +37,13 @@ prompt = ChatPromptTemplate.from_messages(
         ("placeholder", "{chat_history}"),
         ("human", "{input}"),
     ]
-).partial(format_instructions=json_diff_parser.get_format_instructions())
+).partial(format_instructions=pydantic_parser.get_format_instructions())
 
 model = ChatOpenAI(
     temperature=0,
     model_name="gpt-3.5-turbo",
     openai_api_key=os.environ["OPENAI_API_KEY"],
+    streaming=True
 )
 
 # Chain initialization
@@ -45,15 +54,35 @@ chain_with_message_history = RunnableWithMessageHistory(
     history_messages_key="chat_history",
 )
 
-import jsonpatch
+class StreamParser(Runnable):
 
-def jsonpatch_extractor(input_stream, field):
-    """Extract utterance as a text stream from the json diff stream"""
-    current_data = {}
-    for patch in input_stream:
-        json_patch = jsonpatch.JsonPatch([patch])
-        current_data = json_patch.apply(current_data)
-        if field in current_data:
-            yield current_data[field]
+    def __init__(self, field_to_extract):
+        self.field_to_extract = field_to_extract
 
-chain = chain_with_message_history | RunnableGenerator(jsonpatch_extractor)
+    def stream(
+        self,
+        input: Input,
+        config: Optional[RunnableConfig] = None,
+        **kwargs: Optional[Any]
+    ) -> Iterator[Output]:
+
+        generator = RunnableGenerator(self.json_diff_extractor)
+        return generator.stream(input)
+
+    def invoke(self, input: Input, config: Optional[RunnableConfig] = None) -> Output:
+        return input
+
+    def json_diff_extractor(self, input: Input):
+        """Extract diff of chosen field from jsonpatch stream"""
+        current_data = {}
+        previous_str = ""
+        for op in input:
+            json_patch = jsonpatch.JsonPatch(op)
+            current_data = json_patch.apply(current_data)
+            if self.field_to_extract in current_data:
+                new_str = current_data[self.field_to_extract]
+                diff = new_str[len(previous_str):]
+                previous_str = new_str
+                yield diff
+
+chain = chain_with_message_history | StreamParser('utterance')
