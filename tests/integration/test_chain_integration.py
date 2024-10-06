@@ -1,8 +1,6 @@
 """Tests for the outer chat chain"""
 
-import pytest
-
-from chain_setup import chain
+from chat.chain_setup import chain
 
 
 def test_chain_invocation():

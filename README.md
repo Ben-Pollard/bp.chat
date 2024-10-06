@@ -7,18 +7,15 @@ This project is designed to experiment with language models using a Streamlit ap
 To set up the project, ensure you have Python 3.12 installed. Use Poetry to manage dependencies.
 
 1. Install dependencies:
-   ```
+   ```powershell
    poetry install
    ```
 
-2. Set your OpenAI API key as an environment variable:
-   ```bash
-   set OPENAI_API_KEY=your_openai_api_key
-   ```
+2. Set OPENAI_API_KEY as an environment variable:
 
 ## Running
 To run the Streamlit app, execute the following command:
-```bash
+```powershell
 streamlit run app.py
 ```
 
@@ -27,7 +24,7 @@ This will start a local server, and you can interact with the app through your w
 ## Testing
 
 To run the tests, use `pytest`:
-```bash
+```powershell
 pytest tests/
 ```
 
@@ -36,12 +33,12 @@ This will execute the test suite to ensure the chain invocation works as expecte
 ## Building and Running the Docker Image
 
 To build the Docker image, use the following command:
-```bash
-docker build -t your-image-name .
+```powershell
+docker build -t chat .
 ```
 
 To run the Docker container, ensuring your OpenAI API key is passed as an environment variable, use:
-```bash
-docker run --env OPENAI_API_KEY=$OPENAI_API_KEY -p 8501:8501 your-image-name
+```powershell
+docker run --env OPENAI_API_KEY=$Env:OPENAI_API_KEY -p 8501:8501 chat
 ```
 

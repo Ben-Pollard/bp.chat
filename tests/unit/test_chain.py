@@ -1,6 +1,6 @@
 """Tests for the outer chat chain"""
 
-from chain_setup import StreamParser
+from chat.chain_setup import StreamParser
 
 
 def test_json_patch_streaming():
