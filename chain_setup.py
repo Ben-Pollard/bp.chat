@@ -77,8 +77,10 @@ class StreamParser(Runnable):
         return generator.stream(input)
 
     def invoke(
-        self, input: Input, config: Optional[RunnableConfig] = None
-    ) -> Output:  # pylint: disable=W0622
+        self,
+        input: Input,  # pylint: disable=W0622
+        config: Optional[RunnableConfig] = None,
+    ) -> Output:
         return input
 
     def json_diff_extractor(self, input: Input):  # pylint: disable=W0622
