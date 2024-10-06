@@ -6,7 +6,7 @@ from chain_setup import StreamParser
 def test_json_patch_streaming():
     """Unittest for streaming json parser"""
 
-    patches = [
+    fake_json_patches = [
         [{"op": "add", "path": "/reasoning", "value": ""}],
         [{"op": "replace", "path": "/reasoning", "value": "The "}],
         [{"op": "replace", "path": "/reasoning", "value": "The chatbot "}],
