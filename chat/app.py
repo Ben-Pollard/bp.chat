@@ -3,9 +3,11 @@
 This app allows users to input messages and receive responses from a language model chain.
 The responses are streamed in real-time to the display.
 """
+
 import streamlit as st
 from langchain_core.messages import AIMessage, HumanMessage
-from chain_setup import chain
+from chat.chain_setup import ChatAssistant
+
 
 def main():
     """Main function to run the Streamlit app."""
@@ -33,7 +35,9 @@ def main():
             st.markdown(user_input)
 
         with st.chat_message("AI"):
-            stream = chain.stream({"input": user_input}, {"configurable": {"session_id": "unused"}})
+            stream = ChatAssistant().chain.stream(
+                {"input": user_input}, {"configurable": {"session_id": "unused"}}
+            )
             response = st.write_stream(stream)
 
         st.session_state.chat_history.append(AIMessage(content=response))

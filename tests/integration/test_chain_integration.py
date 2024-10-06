@@ -1,6 +1,6 @@
 """Tests for the outer chat chain"""
 
-from chat.chain_setup import chain
+from chat.chain_setup import ChatAssistant
 
 
 def test_chain_invocation():
@@ -9,7 +9,7 @@ def test_chain_invocation():
     user_input = "Hello, how are you?"
 
     # Invoke the chain and check the result
-    result = chain.invoke(
+    result = ChatAssistant().chain.invoke(
         {"input": user_input}, {"configurable": {"session_id": "unused"}}
     )
 
