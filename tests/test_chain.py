@@ -1,6 +1,7 @@
 """Tests for the outer chat chain"""
 
-from chain_setup import StreamParser
+from unittest.mock import patch
+from chain_setup import StreamParser, chain
 
 
 def test_json_patch_streaming():
@@ -26,7 +27,22 @@ def test_json_patch_streaming():
         [{"op": "replace", "path": "/utterance", "value": "How can I help you today?"}],
     ]
 
-    # Use the jsonpatch_extractor to simulate streaming
+def test_chain_call_with_mocked_response():
+    """Test to mock the chain call and receive fake patches"""
+
+    fake_patches = [
+        [{"op": "add", "path": "/utterance", "value": ""}],
+        [{"op": "replace", "path": "/utterance", "value": "Hello "}],
+        [{"op": "replace", "path": "/utterance", "value": "Hello, how "}],
+        [{"op": "replace", "path": "/utterance", "value": "Hello, how are "}],
+        [{"op": "replace", "path": "/utterance", "value": "Hello, how are you?"}],
+    ]
+
+    with patch.object(chain, 'invoke', return_value=fake_patches) as mock_invoke:
+        response = list(chain.invoke({"input": "Hi"}))
+        mock_invoke.assert_called_once_with({"input": "Hi"})
+        assert response == fake_patches
+
     parser = StreamParser("utterance")
     utterance_stream = parser.json_diff_extractor(patches)
 
