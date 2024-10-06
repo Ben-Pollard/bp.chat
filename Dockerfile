@@ -82,11 +82,18 @@ COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
 RUN --mount=type=cache,target=/root/.cache \
     poetry install --with=dev
 
+# copy tests
+COPY ./chat /app/chat
+COPY ./tests /app/tests
+
+# ensure tests can find application code
+ENV PYTHONPATH="/app"
+
+
 # will become mountpoint of our code
 WORKDIR /app
-
 EXPOSE 8501
-CMD ["streamlit", "run", "app.py"]
+CMD ["streamlit", "run", "chat/app.py"]
 
 
 ################################
@@ -96,6 +103,6 @@ CMD ["streamlit", "run", "app.py"]
 FROM python-base AS production
 ENV FASTAPI_ENV=production
 COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
-COPY ./chat /app/
+COPY ./chat /app/chat
 WORKDIR /app
-CMD ["streamlit", "run", "app.py"]
+CMD ["streamlit", "run", "chat/app.py"]
