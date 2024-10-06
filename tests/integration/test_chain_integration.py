@@ -5,7 +5,6 @@ import pytest
 from chain_setup import chain
 
 
-@pytest.mark.integration
 def test_chain_invocation():
     """Test if the chain returns a non-empty string for a given input."""
     # Example input to test the chain
