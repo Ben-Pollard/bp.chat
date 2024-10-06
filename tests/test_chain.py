@@ -44,7 +44,7 @@ def test_chain_call_with_mocked_response():
         assert response == fake_patches
 
     parser = StreamParser("utterance")
-    utterance_stream = parser.json_diff_extractor(patches)
+    utterance_stream = parser.json_diff_extractor(fake_patches)
 
     # Collect the streamed utterance
     collected_stream = "".join([i for i in utterance_stream])
