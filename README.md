@@ -16,7 +16,19 @@ To set up the project, ensure you have Python 3.12 installed. Use Poetry to mana
    set OPENAI_API_KEY=your_openai_api_key
    ```
 
-## Running the Streamlit App
+## Building and Running the Docker Image
+
+To build the Docker image, use the following command:
+```bash
+docker build -t your-image-name .
+```
+
+To run the Docker container, ensuring your OpenAI API key is passed as an environment variable, use:
+```bash
+docker run --env OPENAI_API_KEY=$OPENAI_API_KEY -p 8501:8501 your-image-name
+```
+
+Replace `your-image-name` with the desired name for your Docker image.
 
 To run the Streamlit app, execute the following command:
 ```bash
@@ -27,9 +39,11 @@ This will start a local server, and you can interact with the app through your w
 
 ## Testing
 
-To run the tests, use:
+## Testing
+
+To run the tests, use `pytest`:
 ```bash
-python -m unittest tests/test_chain.py
+pytest tests/
 ```
 
 This will execute the test suite to ensure the chain invocation works as expected.
