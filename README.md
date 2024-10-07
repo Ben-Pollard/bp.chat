@@ -34,11 +34,16 @@ This will execute the test suite to ensure the chain invocation works as expecte
 
 To build the Docker image, use the following command:
 ```powershell
-docker build -t chat .
+docker build --target development -t chat-dev .
 ```
 
-To run the Docker container, ensuring your OpenAI API key is passed as an environment variable, use:
+To run the app in the container, use:
 ```powershell
-docker run --env OPENAI_API_KEY=$Env:OPENAI_API_KEY -p 8501:8501 chat
+docker run --env OPENAI_API_KEY=$Env:OPENAI_API_KEY -p 8501:8501 chat-dev
+```
+
+Or to run the unit tests in the container, use:
+```powershell
+docker run chat-dev pytest /app/tests/unit
 ```
 
