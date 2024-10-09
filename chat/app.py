@@ -34,11 +34,26 @@ def main():
         with st.chat_message("Human"):
             st.markdown(user_input)
 
-        with st.chat_message("AI"):
-            stream = ChatAssistant().chain.stream(
-                {"input": user_input}, {"configurable": {"session_id": "unused"}}
-            )
-            response = st.write_stream(stream)
+        # Create columns for chat and extra fields
+        col1, col2 = st.columns([3, 1])
+
+        with col1:
+            with st.chat_message("AI"):
+                stream = ChatAssistant().chain.stream(
+                    {"input": user_input}, {"configurable": {"session_id": "unused"}}
+                )
+                response = ""
+                for data in stream:
+                    if "utterance" in data:
+                        response += data["utterance"]
+                        st.markdown(data["utterance"])
+
+        with col2:
+            for data in stream:
+                if "target_info" in data:
+                    st.markdown(f"**Target Info:** {data['target_info']}")
+                if "strategy" in data:
+                    st.markdown(f"**Strategy:** {data['strategy']}")
 
         st.session_state.chat_history.append(AIMessage(content=response))
 
