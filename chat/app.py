@@ -14,6 +14,7 @@ from chat.chain_setup import ChatAssistant
 
 class ChatApp:
     def __init__(self, session_id) -> None:
+        """Initialize the ChatApp with a ChatAssistant and session state."""
         self.session_id = session_id
         self.session_state = st.session_state
         self.chat_assistant = ChatAssistant()
@@ -21,6 +22,7 @@ class ChatApp:
         self.column_chat, self.column_metachat = st.columns([3, 1])
 
     def initialise_session_state(self):
+        """Initialize the session state for chat history."""
         st.title("LLM Chain Invocation App")
         st.session_state.chat_history = []
 
@@ -75,6 +77,11 @@ class ChatApp:
             st.markdown(text)
 
     def display_response(self, response: Iterable[Dict]):
+        """Display the response from the chat assistant.
+
+        Args:
+            response (Iterable[Dict]): The response data to display.
+        """
         utterance = ""
         response = list(response)
         for msg in response:
