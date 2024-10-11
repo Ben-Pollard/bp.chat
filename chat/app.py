@@ -28,11 +28,12 @@ class ChatApp:
 
     def display_chat_history(self) -> None:
         """Display the chat history from the session state."""
-        for message in st.session_state.chat_history:
-            if isinstance(message, HumanMessage):
-                self.display_message("Human", message.content)
-            elif isinstance(message, AIMessage):
-                self.display_message("AI", message.content)
+        with st.container():
+            for message in st.session_state.chat_history:
+                if isinstance(message, HumanMessage):
+                    self.display_message("Human", message.content)
+                elif isinstance(message, AIMessage):
+                    self.display_message("AI", message.content)
 
     def get_user_input(self) -> str:
         """Get user input from the chat input field.
