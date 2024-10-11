@@ -4,59 +4,78 @@ This app allows users to input messages and receive responses from a language mo
 The responses are streamed in real-time to the display.
 """
 
+from typing import Dict, Iterable
+
 import streamlit as st
 from langchain_core.messages import AIMessage, HumanMessage
+
 from chat.chain_setup import ChatAssistant
 
 
-def main():
-    """Main function to run the Streamlit app."""
-    st.title("LLM Chain Invocation App")
+class ChatApp:
+    def __init__(self, session_id) -> None:
+        self.session_id = session_id
+        self.session_state = st.session_state
+        self.chat_assistant = ChatAssistant()
+        self.initialise_session_state()
+        self.column_chat, self.column_metachat = st.columns([3, 1])
 
-    # Initialize session state for chat history
-    if "chat_history" not in st.session_state:
+    def initialise_session_state(self):
+        st.title("LLM Chain Invocation App")
         st.session_state.chat_history = []
 
-    # Display chat history
-    for message in st.session_state.chat_history:
-        if isinstance(message, HumanMessage):
-            with st.chat_message("Human"):
-                st.markdown(message.content)
-        elif isinstance(message, AIMessage):
-            with st.chat_message("AI"):
-                st.markdown(message.content)
+    def display_chat_history(self):
+        for message in st.session_state.chat_history:
+            if isinstance(message, HumanMessage):
+                self.display_message("Human", message.content)
+            elif isinstance(message, AIMessage):
+                self.display_message("AI", message.content)
 
-    # Input for user messages and handle response streaming
-    user_input = st.chat_input("Your message:")
-    if user_input is not None and user_input != "":
+    def get_user_input(self):
+        return st.chat_input("Your message:")
+
+    def handle_user_input(self, user_input):
         st.session_state.chat_history.append(HumanMessage(content=user_input))
+        self.display_message("Human", user_input)
+        response = self.get_response(user_input)
+        self.display_response(response)
 
-        with st.chat_message("Human"):
-            st.markdown(user_input)
+    def get_response(self, user_input):
+        config = {"configurable": {"session_id": self.session_id}}
+        return self.chat_assistant.chain.stream({"input": user_input}, config)
 
-        # Create columns for chat and extra fields
-        col1, col2 = st.columns([3, 1])
-
-        with col1:
+    def display_ai_response(self, text):
+        with self.column_chat:
             with st.chat_message("AI"):
-                stream = ChatAssistant().chain.stream(
-                    {"input": user_input}, {"configurable": {"session_id": "unused"}}
-                )
-                response = ""
-                for data in stream:
-                    if "utterance" in data:
-                        response += data["utterance"]
-                        st.markdown(data["utterance"])
+                st.write(text)
 
-        with col2:
-            for data in stream:
-                if "target_info" in data:
-                    st.markdown(f"**Target Info:** {data['target_info']}")
-                if "strategy" in data:
-                    st.markdown(f"**Strategy:** {data['strategy']}")
+    def display_message(self, sender, content):
+        with st.chat_message(sender):
+            st.markdown(content)
 
-        st.session_state.chat_history.append(AIMessage(content=response))
+    def display_response_meta(self, text):
+        with self.column_metachat:
+            st.markdown(text)
+
+    def display_response(self, response: Iterable[Dict]):
+        utterance = ""
+        response = list(response)
+        for msg in response:
+            if "utterance" in msg:
+                utterance += msg["utterance"]
+                self.display_ai_response(msg["utterance"])
+            else:
+                self.display_response_meta(msg)
+
+        self.session_state.chat_history.append(AIMessage(content=utterance))
+
+    def run(self):
+        self.display_chat_history()
+        user_input = self.get_user_input()
+        if user_input:
+            self.handle_user_input(user_input)
 
 
 if __name__ == "__main__":
-    main()
+    app = ChatApp(session_id=1)
+    app.run()

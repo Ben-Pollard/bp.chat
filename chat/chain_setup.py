@@ -1,8 +1,7 @@
 """The outer chat chain"""
 
 import os
-from typing import Any, Iterator, Optional
-
+from typing import Any, Iterator, Optional, Type, Dict, List
 import jsonpatch
 from langchain.schema.runnable import RunnableGenerator
 from langchain_community.chat_message_histories import ChatMessageHistory
@@ -20,20 +19,10 @@ set_debug(True)
 
 
 class StreamParser(Runnable):
-    """Runnable to selectively apply a jsonpatch parser when streaming"""
+    """Runnable to apply a jsonpatch parser when streaming and yield field diffs."""
 
-    def __init__(self, field_to_extract):
-        self.field_to_extract = field_to_extract
-
-    def stream(
-        self,
-        input: Input,  # pylint: disable=W0622
-        config: Optional[RunnableConfig] = None,
-        **kwargs: Optional[Any]
-    ) -> Iterator[Output]:
-
-        generator = RunnableGenerator(self.json_diff_extractor)
-        return generator.stream(input)
+    def __init__(self, model_class: Type[BaseModel]):
+        self.model_fields = model_class.model_fields
 
     def invoke(
         self,
@@ -42,18 +31,28 @@ class StreamParser(Runnable):
     ) -> Output:
         return input
 
+    def stream(
+        self,
+        input: Iterator[List[Dict[str, Any]]],  # pylint: disable=W0622
+        config: Optional[RunnableConfig] = None,
+        **kwargs: Optional[Any]
+    ) -> Iterator[Dict[str, str]]:
+        generator = RunnableGenerator(self.json_diff_extractor)
+        return generator.stream(input)
+
     def json_diff_extractor(self, input: Input):  # pylint: disable=W0622
-        """Extract diff of chosen field from jsonpatch stream"""
-        current_data = {}
-        previous_str = ""
+        """Extract diff of chosen fields from jsonpatch stream."""
+        current_json = {}
+        previous_str = {field: "" for field in self.model_fields}
         for op in input:
             json_patch = jsonpatch.JsonPatch(op)
-            current_data = json_patch.apply(current_data)
-            if self.field_to_extract in current_data:
-                new_str = current_data[self.field_to_extract]
-                diff = new_str[len(previous_str) :]
-                previous_str = new_str
-                yield diff
+            current_json = json_patch.apply(current_json)
+            for field in self.model_fields:
+                if field in current_json:
+                    new_str = current_json[field]
+                    diff = new_str[len(previous_str[field]) :]
+                    previous_str[field] = new_str
+                    yield {field: diff}
 
 
 class ChatCoT(BaseModel):
@@ -69,14 +68,14 @@ class ChatAssistant:
 
     def __init__(self) -> None:
 
-        ephemeral_chat_history = ChatMessageHistory()
+        user_chat_history = ChatMessageHistory()
 
         system_prompt = "Your task is to carry out a mental health diagnostic conversation. You can ask questions and should direct the conversation toward reaching your goal of generating information that can be reviewed by a human mental health professional. As a bot you may not suggest or propose a diagnosis to the user. Your questions and responses must be very simple and short."  # pylint: disable=C0301
 
         prompt_template = system_prompt + "\n\n{format_instructions}" ""
 
         pydantic_parser = PydanticOutputParser(pydantic_object=ChatCoT)
-        json_diff_parser = JsonOutputParser(diff=True)
+        json_diff_parser = JsonOutputParser(diff=True, pydantic_object=ChatCoT)
 
         prompt = ChatPromptTemplate.from_messages(
             [
@@ -95,10 +94,10 @@ class ChatAssistant:
 
         # Chain initialization
         chain_with_message_history = RunnableWithMessageHistory(
-            prompt | model | json_diff_parser,
-            lambda session_id: ephemeral_chat_history,
+            prompt | model | json_diff_parser | StreamParser(ChatCoT),
+            lambda session_id: user_chat_history,
             input_messages_key="input",
             history_messages_key="chat_history",
         )
 
-        self.chain = chain_with_message_history | StreamParser("utterance")
+        self.chain = chain_with_message_history
