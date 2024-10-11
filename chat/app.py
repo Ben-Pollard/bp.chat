@@ -25,6 +25,7 @@ class ChatApp:
         st.session_state.chat_history = []
 
     def display_chat_history(self):
+        """Display the chat history from the session state."""
         for message in st.session_state.chat_history:
             if isinstance(message, HumanMessage):
                 self.display_message("Human", message.content)
@@ -32,9 +33,19 @@ class ChatApp:
                 self.display_message("AI", message.content)
 
     def get_user_input(self):
+        """Get user input from the chat input field.
+
+        Returns:
+            str: The user's input message.
+        """
         return st.chat_input("Your message:")
 
     def handle_user_input(self, user_input):
+        """Handle the user's input by updating chat history and streaming responses.
+
+        Args:
+            user_input (str): The input message from the user.
+        """
         st.session_state.chat_history.append(HumanMessage(content=user_input))
         self.display_message("Human", user_input)
         response = self.get_response(user_input)
@@ -50,6 +61,12 @@ class ChatApp:
                 st.write(text)
 
     def display_message(self, sender, content):
+        """Display a message in the chat.
+
+        Args:
+            sender (str): The sender of the message, either 'Human' or 'AI'.
+            content (str): The content of the message to display.
+        """
         with st.chat_message(sender):
             st.markdown(content)
 
@@ -70,6 +87,7 @@ class ChatApp:
         self.session_state.chat_history.append(AIMessage(content=utterance))
 
     def run(self):
+        """Run the chat application, displaying chat history and handling user input."""
         self.display_chat_history()
         user_input = self.get_user_input()
         if user_input:
