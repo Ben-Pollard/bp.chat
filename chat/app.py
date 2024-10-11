@@ -49,8 +49,8 @@ class ChatApp:
         Args:
             user_input (str): The input message from the user.
         """
-        st.session_state.chat_history.append(HumanMessage(content=user_input))
         self.display_message("Human", user_input)
+        st.session_state.chat_history.append(HumanMessage(content=user_input))
         response = self.get_response(user_input)
         self.display_response(response)
 
@@ -84,15 +84,14 @@ class ChatApp:
             response (Iterable[Dict]): The response data to display.
         """
         utterance = ""
-        with self.column_chat:
-            ai_message_container = st.chat_message("AI")
-            for msg in response:
-                if "utterance" in msg:
-                    utterance += msg["utterance"]
-                    with ai_message_container:
-                        st.write(utterance)  # Update the AI message incrementally
-                else:
-                    self.display_response_meta(msg)
+        ai_message_container = st.chat_message("AI")
+        for msg in response:
+            if "utterance" in msg:
+                utterance += msg["utterance"]
+                with ai_message_container:
+                    st.write(utterance)  # Update the AI message incrementally
+            else:
+                self.display_response_meta(msg)
 
         # Append the complete AI message to the chat history
         self.session_state.chat_history.append(AIMessage(content=utterance))
