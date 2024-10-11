@@ -28,7 +28,7 @@ class ChatApp:
 
     def display_chat_history(self) -> None:
         """Display the chat history from the session state."""
-        with st.container():
+        with st.expander("Chat History", expanded=True):
             for message in st.session_state.chat_history:
                 if isinstance(message, HumanMessage):
                     self.display_message("Human", message.content)
@@ -84,14 +84,16 @@ class ChatApp:
             response (Iterable[Dict]): The response data to display.
         """
         utterance = ""
-        ai_message_container = st.chat_message("AI")
-        for msg in response:
-            if "utterance" in msg:
-                utterance += msg["utterance"]
-                with ai_message_container:
-                    st.write(utterance)  # Update the AI message incrementally
-            else:
-                self.display_response_meta(msg)
+        with self.column_chat:
+            ai_message_container = st.chat_message("AI")
+            for msg in response:
+                if "utterance" in msg:
+                    utterance += msg["utterance"]
+                    with ai_message_container:
+                        st.write(utterance)  # Update the AI message incrementally
+                else:
+                    with self.column_metachat:
+                        self.display_response_meta(msg)
 
         # Append the complete AI message to the chat history
         self.session_state.chat_history.append(AIMessage(content=utterance))
