@@ -13,7 +13,7 @@ from chat.chain_setup import ChatAssistant
 
 
 class ChatApp:
-    def __init__(self, session_id) -> None:
+    def __init__(self, session_id: int) -> None:
         """Initialize the ChatApp with a ChatAssistant and session state."""
         self.session_id = session_id
         self.session_state = st.session_state
@@ -21,12 +21,12 @@ class ChatApp:
         self.initialise_session_state()
         self.column_chat, self.column_metachat = st.columns([3, 1])
 
-    def initialise_session_state(self):
+    def initialise_session_state(self) -> None:
         """Initialize the session state for chat history."""
         st.title("LLM Chain Invocation App")
         st.session_state.chat_history = []
 
-    def display_chat_history(self):
+    def display_chat_history(self) -> None:
         """Display the chat history from the session state."""
         for message in st.session_state.chat_history:
             if isinstance(message, HumanMessage):
@@ -34,7 +34,7 @@ class ChatApp:
             elif isinstance(message, AIMessage):
                 self.display_message("AI", message.content)
 
-    def get_user_input(self):
+    def get_user_input(self) -> str:
         """Get user input from the chat input field.
 
         Returns:
@@ -42,7 +42,7 @@ class ChatApp:
         """
         return st.chat_input("Your message:")
 
-    def handle_user_input(self, user_input):
+    def handle_user_input(self, user_input: str) -> None:
         """Handle the user's input by updating chat history and streaming responses.
 
         Args:
@@ -53,16 +53,16 @@ class ChatApp:
         response = self.get_response(user_input)
         self.display_response(response)
 
-    def get_response(self, user_input):
+    def get_response(self, user_input: str) -> Iterable[Dict]:
         config = {"configurable": {"session_id": self.session_id}}
         return self.chat_assistant.chain.stream({"input": user_input}, config)
 
-    def display_ai_response(self, text):
+    def display_ai_response(self, text: str) -> None:
         with self.column_chat:
             with st.chat_message("AI"):
                 st.write(text)
 
-    def display_message(self, sender, content):
+    def display_message(self, sender: str, content: str) -> None:
         """Display a message in the chat.
 
         Args:
@@ -72,11 +72,11 @@ class ChatApp:
         with st.chat_message(sender):
             st.markdown(content)
 
-    def display_response_meta(self, text):
+    def display_response_meta(self, text: str) -> None:
         with self.column_metachat:
             st.markdown(text)
 
-    def display_response(self, response: Iterable[Dict]):
+    def display_response(self, response: Iterable[Dict]) -> None:
         """Display the response from the chat assistant.
 
         Args:
@@ -93,7 +93,7 @@ class ChatApp:
 
         self.session_state.chat_history.append(AIMessage(content=utterance))
 
-    def run(self):
+    def run(self) -> None:
         """Run the chat application, displaying chat history and handling user input."""
         self.display_chat_history()
         user_input = self.get_user_input()
