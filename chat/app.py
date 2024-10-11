@@ -84,14 +84,17 @@ class ChatApp:
             response (Iterable[Dict]): The response data to display.
         """
         utterance = ""
-        response = list(response)
-        for msg in response:
-            if "utterance" in msg:
-                utterance += msg["utterance"]
-                self.display_ai_response(msg["utterance"])
-            else:
-                self.display_response_meta(msg)
+        with self.column_chat:
+            ai_message_container = st.chat_message("AI")
+            for msg in response:
+                if "utterance" in msg:
+                    utterance += msg["utterance"]
+                    with ai_message_container:
+                        st.write(utterance)  # Update the AI message incrementally
+                else:
+                    self.display_response_meta(msg)
 
+        # Append the complete AI message to the chat history
         self.session_state.chat_history.append(AIMessage(content=utterance))
 
     def run(self) -> None:
