@@ -2,6 +2,7 @@ from unittest.mock import patch
 import pytest
 import streamlit as st
 from tests.unit.conftest import chat_app, mock_get_response
+from langchain_core.messages import AIMessage, HumanMessage
 
 
 def test_app_starts(at):
