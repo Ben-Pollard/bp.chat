@@ -16,24 +16,41 @@ class ChatApp:
     def __init__(self, session_id: int) -> None:
         """Initialize the ChatApp with a ChatAssistant and session state."""
         self.session_id = session_id
-        self.session_state = st.session_state
         self.chat_assistant = ChatAssistant()
         self.initialise_session_state()
+
+        # layout
         self.column_chat, self.column_metachat = st.columns([3, 1])
 
     def initialise_session_state(self) -> None:
         """Initialize the session state for chat history."""
-        st.title("LLM Chain Invocation App")
-        st.session_state.chat_history = []
+        if "chat_history" not in st.session_state:
+            st.session_state.chat_history = []
 
     def display_chat_history(self) -> None:
         """Display the chat history from the session state."""
-        with st.expander("Chat History", expanded=True):
-            for message in st.session_state.chat_history:
-                if isinstance(message, HumanMessage):
-                    self.display_message("Human", message.content)
-                elif isinstance(message, AIMessage):
-                    self.display_message("AI", message.content)
+        for message in st.session_state.chat_history:
+            if isinstance(message, HumanMessage):
+                self.display_message("Human", message.content)
+            elif isinstance(message, AIMessage):
+                self.display_message("AI", message.content)
+
+    def display_message(self, sender: str, content: str) -> None:
+        """Display a message in the chat.
+
+        Args:
+            sender (str): The sender of the message, either 'Human' or 'AI'.
+            content (str): The content of the message to display.
+        """
+        with self.column_chat:
+            with st.chat_message(sender):
+                st.write(content)
+
+    def display_meta_message(self, text: str) -> None:
+        """Display metadata in the designated meta column."""
+        with self.column_metachat:
+            with st.chat_message:
+                st.write(text)
 
     def get_user_input(self) -> str:
         """Get user input from the chat input field.
@@ -51,31 +68,19 @@ class ChatApp:
         """
         self.display_message("Human", user_input)
         st.session_state.chat_history.append(HumanMessage(content=user_input))
+
         response = self.get_response(user_input)
         self.display_response(response)
 
     def get_response(self, user_input: str) -> Iterable[Dict]:
+        """Get the response stream from the backend"""
         config = {"configurable": {"session_id": self.session_id}}
-        return self.chat_assistant.chain.stream({"input": user_input}, config)
 
-    def display_ai_response(self, text: str) -> None:
-        with self.column_chat:
-            with st.chat_message("AI"):
-                st.write(text)
-
-    def display_message(self, sender: str, content: str) -> None:
-        """Display a message in the chat.
-
-        Args:
-            sender (str): The sender of the message, either 'Human' or 'AI'.
-            content (str): The content of the message to display.
-        """
-        with st.chat_message(sender):
-            st.markdown(content)
-
-    def display_response_meta(self, text: str) -> None:
-        with self.column_metachat:
-            st.markdown(text)
+        try:
+            return self.chat_assistant.chain.stream({"input": user_input}, config)
+        except Exception as e:
+            st.error(f"Error in response stream {e}")
+            return []
 
     def display_response(self, response: Iterable[Dict]) -> None:
         """Display the response from the chat assistant.
@@ -83,25 +88,33 @@ class ChatApp:
         Args:
             response (Iterable[Dict]): The response data to display.
         """
-        utterance = ""
+
+        # Create a placeholder at the END of the chat for AI's response
         with self.column_chat:
-            ai_message_container = st.chat_message("AI")
-            for msg in response:
-                if "utterance" in msg:
-                    utterance += msg["utterance"]
-                    with ai_message_container:
-                        st.write(utterance)  # Update the AI message incrementally
-                else:
-                    with self.column_metachat:
-                        self.display_response_meta(msg)
+            with st.chat_message("AI"):
+                message_placeholder = st.empty()
+
+        # Create a placeholder for metadata in the metachat column (outside the AI container)
+        with self.column_metachat:
+            meta_placeholder = st.empty()
+
+        utterance = ""
+
+        for msg in response:
+            if "utterance" in msg:
+                utterance += msg["utterance"]
+                message_placeholder.markdown(utterance)
+            else:
+                meta_placeholder.markdown(msg)
 
         # Append the complete AI message to the chat history
-        self.session_state.chat_history.append(AIMessage(content=utterance))
+        st.session_state.chat_history.append(AIMessage(content=utterance))
 
     def run(self) -> None:
         """Run the chat application, displaying chat history and handling user input."""
-        self.display_chat_history()
         user_input = self.get_user_input()
+        self.display_chat_history()
+
         if user_input:
             self.handle_user_input(user_input)
 
