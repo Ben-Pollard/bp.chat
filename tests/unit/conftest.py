@@ -18,7 +18,7 @@ def mock_get_response() -> Iterable[Dict]:
     )
 
 
-@pytest.fixture()
-def at():
-    """Fixture that prepares the Streamlit app tests"""
-    yield AppTest.from_function(lambda x: ChatApp(session_id=1).run())
+@pytest.fixture
+def chat_app():
+    """Fixture to initialize the ChatApp."""
+    return ChatApp(session_id=1)

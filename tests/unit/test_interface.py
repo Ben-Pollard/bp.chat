@@ -1,7 +1,7 @@
 from unittest.mock import patch
 import pytest
 import streamlit as st
-from tests.unit.conftest import at, mock_get_response
+from tests.unit.conftest import chat_app, mock_get_response
 
 
 def test_app_starts(at):
@@ -9,24 +9,21 @@ def test_app_starts(at):
     assert not at.exception
 
 
-def test_human_message_input(at, mock_get_response):
+def test_human_message_input(chat_app, mock_get_response):
     """Test entering a human chat message and receiving a response."""
-    with patch("chat.app.ChatApp.get_response", return_value=mock_get_response):
+    with patch.object(chat_app, "get_response", return_value=mock_get_response):
         # Simulate user input
-        at.chat_input[0].set_value("Hi").run()
+        user_input = "Hi"
+        chat_app.handle_user_input(user_input)
 
-        # st.session_state.chat_history = []
-        # at.run()
-        # st.session_state.chat_history.append("Hello, AI!")
+        # Check if the human message is added to chat history
+        assert any(
+            isinstance(msg, HumanMessage) and msg.content == "Hi"
+            for msg in st.session_state.chat_history
+        )
 
-        # # Check if the human message is added to chat history
-        # assert any(
-        #     isinstance(msg, str) and msg == "Hello, AI!"
-        #     for msg in st.session_state.chat_history
-        # )
-
-        # # Check if the AI response is added to chat history
-        # assert any(
-        #     isinstance(msg, str) and "bot utterance" in msg
-        #     for msg in st.session_state.chat_history
-        # )
+        # Check if the AI response is added to chat history
+        assert any(
+            isinstance(msg, AIMessage) and "bot utterance" in msg.content
+            for msg in st.session_state.chat_history
+        )
