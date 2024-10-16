@@ -4,19 +4,19 @@ This app allows users to input messages and receive responses from a language mo
 The responses are streamed in real-time to the display.
 """
 
-from typing import Dict, Iterable
+from typing import Dict
 
 import streamlit as st
 from langchain_core.messages import AIMessage, HumanMessage
 
-from api.chain_setup import ChatAssistant
+from api_client import ApiClient
 
 
 class ChatApp:
     def __init__(self, session_id: int) -> None:
         """Initialize the ChatApp with a ChatAssistant and session state."""
         self.session_id = session_id
-        self.chat_assistant = ChatAssistant()
+        self.api_client = ApiClient(base_url="http://localhost:8000")
         self.initialise_session_state()
 
         # layout
@@ -69,18 +69,9 @@ class ChatApp:
         self.display_message("Human", user_input)
         st.session_state.chat_history.append(HumanMessage(content=user_input))
 
-        response = self.get_response(user_input)
+        response = self.api_client.get_response(user_input, self.session_id)
         self.display_response(response)
 
-    def get_response(self, user_input: str) -> Iterable[Dict]:
-        """Get the response stream from the backend"""
-        config = {"configurable": {"session_id": self.session_id}}
-
-        try:
-            return self.chat_assistant.chain.stream({"input": user_input}, config)
-        except Exception as e:
-            st.error(f"Error in response stream {e}")
-            return []
 
     def display_response(self, response: Iterable[Dict]) -> None:
         """Display the response from the chat assistant.
