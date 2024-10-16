@@ -4,7 +4,7 @@ This app allows users to input messages and receive responses from a language mo
 The responses are streamed in real-time to the display.
 """
 
-from typing import Dict
+from typing import Dict, Iterable
 
 import streamlit as st
 from langchain_core.messages import AIMessage, HumanMessage
