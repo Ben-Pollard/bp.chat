@@ -8,7 +8,7 @@ To set up the project, ensure you have Python 3.12 installed. Use Poetry to mana
 
 1. Install dependencies:
    ```powershell
-   poetry install
+   poetry install --all-extras
    ```
 
 2. Set OPENAI_API_KEY as an environment variable:

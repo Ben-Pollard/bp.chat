@@ -1,6 +1,6 @@
 """Tests for the outer chat chain"""
 
-from api.chain_setup import ChatAssistant
+from chain_setup import ChatAssistant
 
 
 def test_chain_invocation():
