@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 import streamlit as st
 from langchain_core.messages import AIMessage, HumanMessage
@@ -6,7 +6,7 @@ from langchain_core.messages import AIMessage, HumanMessage
 
 def test_human_message_input(chat_app, mock_get_response):
     """Test entering a human chat message and receiving a response."""
-    with patch.object(chat_app, "get_response", return_value=mock_get_response):
+    with patch.object(chat_app.api_client, "get_response", return_value=mock_get_response):
         # Simulate user input
         user_input = "Hi"
         chat_app.handle_user_input(user_input)
