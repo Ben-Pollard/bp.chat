@@ -66,43 +66,4 @@ RUN --mount=type=cache,target=/root/.cache \
     poetry install --without=dev
 
 
-################################
-# DEVELOPMENT
-# Image used during development / testing
-################################
-FROM python-base AS development
-ENV FASTAPI_ENV=development
-WORKDIR $PYSETUP_PATH
 
-# copy in our built poetry + venv
-COPY --from=builder-base $POETRY_HOME $POETRY_HOME
-COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
-
-# quicker install as runtime deps are already installed
-RUN --mount=type=cache,target=/root/.cache \
-    poetry install --with=dev
-
-# copy tests
-COPY ./chat /app/chat
-COPY ./tests /app/tests
-
-# ensure tests can find application code
-ENV PYTHONPATH="/app"
-
-
-# will become mountpoint of our code
-WORKDIR /app
-EXPOSE 8501
-CMD ["streamlit", "run", "chat/app.py"]
-
-
-################################
-# PRODUCTION
-# Final image used for runtime
-################################
-FROM python-base AS production
-ENV FASTAPI_ENV=production
-COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
-COPY ./chat /app/chat
-WORKDIR /app
-CMD ["streamlit", "run", "chat/app.py"]
