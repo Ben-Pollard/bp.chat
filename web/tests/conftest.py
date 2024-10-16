@@ -1,7 +1,7 @@
 import pytest
 from typing import Dict, Iterable
 from streamlit.testing.v1 import AppTest
-from chat.app import ChatApp
+from web.app import ChatApp
 
 
 @pytest.fixture

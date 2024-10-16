@@ -9,7 +9,7 @@ from typing import Dict, Iterable
 import streamlit as st
 from langchain_core.messages import AIMessage, HumanMessage
 
-from chat.chain_setup import ChatAssistant
+from api.chain_setup import ChatAssistant
 
 
 class ChatApp:
