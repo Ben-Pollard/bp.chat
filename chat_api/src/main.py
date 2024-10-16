@@ -11,6 +11,7 @@ chat_assistant = ChatAssistant()
 
 @app.post("/chat")
 async def chat(request: StreamRequest):
+    """Respond to a message with an async streaming chat response"""
     user_input = await request.model_dump_json()  # Get user input from the request
     config = {"configurable": {"session_id": "your_session_id"}}  # Set your session ID
 

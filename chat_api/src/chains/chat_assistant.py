@@ -10,7 +10,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
-from chat_api.src.utils.runnables import StreamParser
+from src.utils.runnables import StreamParser
 
 set_debug(True)
 
