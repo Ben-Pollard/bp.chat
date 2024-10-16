@@ -49,7 +49,7 @@ class ChatApp:
     def display_meta_message(self, text: str) -> None:
         """Display metadata in the designated meta column."""
         with self.column_metachat:
-            with st.chat_message:
+            with st.chat_message("Chain of Thought"):
                 st.write(text)
 
     def get_user_input(self) -> str:
@@ -94,10 +94,6 @@ class ChatApp:
             with st.chat_message("AI"):
                 message_placeholder = st.empty()
 
-        # Create a placeholder for metadata in the metachat column (outside the AI container)
-        with self.column_metachat:
-            meta_placeholder = st.empty()
-
         utterance = ""
 
         for msg in response:
@@ -105,7 +101,7 @@ class ChatApp:
                 utterance += msg["utterance"]
                 message_placeholder.markdown(utterance)
             else:
-                meta_placeholder.markdown(msg)
+                self.display_meta_message(msg)
 
         # Append the complete AI message to the chat history
         st.session_state.chat_history.append(AIMessage(content=utterance))
