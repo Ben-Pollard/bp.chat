@@ -1,4 +1,11 @@
 from fastapi.testclient import TestClient
+import sys
+import os
+from fastapi.testclient import TestClient
+
+# Add the project root to the PYTHONPATH
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
+
 from chat_api.src.main import app
 
 client = TestClient(app)
