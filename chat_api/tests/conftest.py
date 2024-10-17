@@ -10,8 +10,7 @@ from chat_api.src import main
 @pytest.fixture
 def mock_chain_stream() -> Iterator[Dict[str, str]]:
     """Mocking the result of calling chat.astream"""
-    for rsp in [{"utterance": "hello"}, {"utterance": "there"}]:
-        yield rsp
+    return iter([{"utterance": "hello"}, {"utterance": "there"}])
 
 
 @pytest.fixture
