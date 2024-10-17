@@ -9,7 +9,7 @@ from typing import Dict, Iterable
 import streamlit as st
 from langchain_core.messages import AIMessage, HumanMessage
 
-from api_client import ApiClient
+from src.api_client import ApiClient
 
 
 class ChatApp:
@@ -71,7 +71,6 @@ class ChatApp:
 
         response = self.api_client.get_response(user_input, self.session_id)
         self.display_response(response)
-
 
     def display_response(self, response: Iterable[Dict]) -> None:
         """Display the response from the chat assistant.

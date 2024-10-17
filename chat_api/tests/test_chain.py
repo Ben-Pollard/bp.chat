@@ -1,6 +1,6 @@
 """Tests for the outer chat chain"""
 
-from src.chains.chat_assistant import StreamParser, ChatCoT
+from chat_api.src.chains.chat_assistant import StreamParser, ChatCoT
 
 
 def test_json_patch_streaming():

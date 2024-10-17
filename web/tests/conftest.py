@@ -1,6 +1,6 @@
-import pytest
 from typing import Dict, Iterable
-from streamlit.testing.v1 import AppTest
+
+import pytest
 from src.app import ChatApp
 
 
