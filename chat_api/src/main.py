@@ -13,7 +13,7 @@ app = FastAPI()
 chat_assistant = ChatAssistant()
 
 
-@app.get("/chat")
+@app.post("/chat")
 async def chat(request: StreamRequest):
     """Respond to a message with an async streaming chat response"""
     user_input = request.model_dump_json()  # Get user input from the request

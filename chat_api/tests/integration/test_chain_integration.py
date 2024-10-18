@@ -1,6 +1,7 @@
 """Tests including calls to real LLM"""
 
 from fastapi.testclient import TestClient
+import httpx
 
 
 def test_chain_invocation(chat_assistant):
@@ -18,8 +19,13 @@ def test_chain_invocation(chat_assistant):
     assert len(result) > 0
 
 
-def test_chat_endpoint(client: TestClient):
-    response = client.get(
-        "/chat", params={"message": "Hello, how are you?"}, stream=True
-    )
-    assert response.status_code == 200
+def test_chat_endpoint():
+    url = "http://127.0.0.1:8000/chat"
+
+    response = []
+
+    with httpx.stream("POST", url, json={"message": "Hello, how are you?"}) as r:
+        for chunk in r.iter_raw():  # or, for line in r.iter_lines():
+            response.append(chunk)
+
+    assert response[0].status_code == 200
