@@ -25,7 +25,7 @@ def test_chat_endpoint():
     response = []
 
     with httpx.stream("POST", url, json={"message": "Hello, how are you?"}) as r:
-        for chunk in r.iter_raw():  # or, for line in r.iter_lines():
+        for chunk in r.iter_raw():
             response.append(chunk)
 
     assert response[0].status_code == 200
