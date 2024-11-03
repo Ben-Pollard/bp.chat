@@ -5,12 +5,25 @@ import json
 from fastapi import FastAPI
 from sse_starlette.sse import ServerSentEvent, EventSourceResponse
 
-from chat_api.src.chains.chat_assistant import ChatAssistant
-from chat_api.src.models.message import StreamRequest
+from src.chains.chat_assistant import ChatAssistant
+from src.models.message import StreamRequest
 
 app = FastAPI()
 
 chat_assistant = ChatAssistant()
+
+
+@app.post("/test")
+async def test(request: StreamRequest):
+    """Streams a canned response"""
+    request.model_dump_json()  # Get user input from the request
+
+    async def event_stream():
+        for chunk in iter([{"utterance": "hello "}, {"utterance": "there"}]):
+            yield ServerSentEvent(json.dumps(chunk))  # Stream each chunk of response
+        yield ServerSentEvent("[DONE]")
+
+    return EventSourceResponse(event_stream(), media_type="text/event-stream")
 
 
 @app.post("/chat")
