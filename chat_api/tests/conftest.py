@@ -9,15 +9,18 @@ from chat_api.src import main
 
 @pytest.fixture
 def mock_chain_stream() -> Iterator[Dict[str, str]]:
-    """Mocking the result of calling chat.astream"""
-    return iter([{"utterance": "hello"}, {"utterance": "there"}])
+    """Mocking the result of calling chat.stream"""
+    return [{"utterance": "hello"}, {"utterance": "there"}]
 
 
 @pytest.fixture
 def chat_assistant(mock_chain_stream):
     """Chat assistant class defining the primary chain"""
-    chat_assistant = ChatAssistant()
-    with patch("chat_api.src.chains.chat_assistant.RunnableWithMessageHistory.__call__", return_value=mock_chain_stream):
+    with patch(
+        "chat_api.src.chains.chat_assistant.RunnableWithMessageHistory.__call__",
+        return_value=mock_chain_stream,
+    ):
+        chat_assistant = ChatAssistant()
         return chat_assistant
 
 

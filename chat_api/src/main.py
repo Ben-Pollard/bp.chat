@@ -3,7 +3,7 @@
 import json
 
 from fastapi import FastAPI
-from fastapi.responses import StreamingResponse
+from sse_starlette.sse import ServerSentEvent, EventSourceResponse
 
 from chat_api.src.chains.chat_assistant import ChatAssistant
 from chat_api.src.models.message import StreamRequest
@@ -19,11 +19,12 @@ async def chat(request: StreamRequest):
     user_input = request.model_dump_json()  # Get user input from the request
     config = {"configurable": {"session_id": "your_session_id"}}  # Set your session ID
 
-    def event_stream():
+    async def event_stream():
         for chunk in chat_assistant.chain.stream({"input": user_input}, config):
-            yield json.dumps(chunk)  # Stream each chunk of response
+            yield ServerSentEvent(json.dumps(chunk))  # Stream each chunk of response
+        yield ServerSentEvent("[DONE]")
 
-    return StreamingResponse(event_stream(), media_type="application/json")
+    return EventSourceResponse(event_stream(), media_type="text/event-stream")
 
 
 if __name__ == "__main__":
