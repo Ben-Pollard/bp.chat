@@ -1,14 +1,14 @@
 import json
 from unittest.mock import patch
 
-# from fastapi.testclient import TestClient
+from fastapi.testclient import TestClient
 
 from chat_api.src.main import app
 
 # client = TestClient(app)
 
 
-def test_chat_endpoint(client, mock_chain_stream):
+def test_chat_endpoint(client: TestClient, mock_chain_stream):
 
     # with patch(
     #     "chat_api.src.chains.chat_assistant.RunnableWithMessageHistory.stream",

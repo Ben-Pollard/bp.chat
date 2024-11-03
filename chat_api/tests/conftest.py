@@ -17,7 +17,7 @@ def mock_chain_stream() -> Iterator[Dict[str, str]]:
 def chat_assistant(mock_chain_stream):
     """Chat assistant class defining the primary chain"""
     with patch(
-        "chat_api.src.chains.chat_assistant.RunnableWithMessageHistory.__call__",
+        "chat_api.src.chains.chat_assistant.RunnableWithMessageHistory.stream",
         return_value=mock_chain_stream,
     ):
         chat_assistant = ChatAssistant()
