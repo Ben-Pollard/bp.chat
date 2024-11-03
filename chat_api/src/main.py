@@ -5,8 +5,8 @@ import json
 from fastapi import FastAPI
 from sse_starlette.sse import ServerSentEvent, EventSourceResponse
 
-from src.chains.chat_assistant import ChatAssistant
-from src.models.message import StreamRequest
+from chains.chat_assistant import ChatAssistant
+from models.message import StreamRequest
 
 app = FastAPI()
 

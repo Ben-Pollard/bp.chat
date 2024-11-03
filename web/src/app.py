@@ -69,7 +69,7 @@ class ChatApp:
         self.display_message("Human", user_input)
         st.session_state.chat_history.append(HumanMessage(content=user_input))
 
-        response = self.api_client.get_response(user_input, self.session_id)
+        response = self.api_client.get_chat_response(user_input, self.session_id)
         self.display_response(response)
 
     def display_response(self, response: Iterable[Dict]) -> None:

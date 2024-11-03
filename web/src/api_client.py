@@ -7,9 +7,17 @@ class ApiClient:
     def __init__(self, base_url: str):
         self.base_url = base_url
 
-    def get_response(self, user_input: str, session_id: int) -> Iterable[Dict]:
+    def get_chat_response(self, user_input: str, session_id: int):
+        return self.get_response("chat", user_input, session_id)
+
+    def get_test_response(self):
+        return self.get_response("test", "test", -1)
+
+    def get_response(
+        self, endpoint, user_input: str, session_id: int
+    ) -> Iterable[Dict]:
         """Get the response stream from the chat API."""
-        url = f"{self.base_url}/test"
+        url = f"{self.base_url}/{endpoint}"
         # payload = {"input": user_input, "session_id": session_id}
         payload = {"message": user_input}
 

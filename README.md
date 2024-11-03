@@ -21,7 +21,7 @@ uvicorn --app-dir=chat_api src.main:app --reload
 
 To run the Streamlit app, execute the following command:
 ```powershell
-cd web
+cd web/src
 streamlit run .\src\app.py
 ```
 
