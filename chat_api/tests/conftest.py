@@ -25,12 +25,6 @@ def chat_assistant(mock_chain_stream):
 
 
 @pytest.fixture
-def app(chat_assistant):
-    with patch.object(main, "chat_assistant", return_value=chat_assistant):
-        return main.app
-
-
-@pytest.fixture
-def client(app):
+def client():
     """Test client for the fastapi app"""
-    return TestClient(app)
+    return TestClient(main.app)
