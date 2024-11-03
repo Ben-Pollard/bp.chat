@@ -1,7 +1,7 @@
 from typing import Dict, Iterable
 
 import pytest
-from src.app import ChatApp
+from web.src.app import ChatApp
 
 
 @pytest.fixture

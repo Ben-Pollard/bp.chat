@@ -14,9 +14,15 @@ To set up the project, ensure you have Python 3.12 installed. Use Poetry to mana
 2. Set OPENAI_API_KEY as an environment variable:
 
 ## Running
+To run the chat server:
+```powershell
+uvicorn --app-dir=chat_api src.main:app --reload
+```
+
 To run the Streamlit app, execute the following command:
 ```powershell
-streamlit run app.py
+cd web
+streamlit run .\src\app.py
 ```
 
 This will start a local server, and you can interact with the app through your web browser.
