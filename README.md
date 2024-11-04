@@ -40,7 +40,9 @@ This will execute the test suite to ensure the chain invocation works as expecte
 
 To build the Docker image, use the following command:
 ```powershell
-docker build --target development -t chat-dev .
+docker build -tbuilder-base -f Dockerfile.base .
+docker build --target chat-api-development -t chat-dev .\chat_api
+docker build --target web-development -t web-dev .\web
 ```
 
 To run the app in the container, use:

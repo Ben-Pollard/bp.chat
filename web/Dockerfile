@@ -3,26 +3,24 @@
 # Used to build deps for this service
 ################################
 FROM builder-base AS builder-web
-RUN --mount=type=cache,target=/root/.cache \
-    poetry install --extras "web"
+COPY poetry.lock pyproject.toml ./
 
 ################################
 # DEVELOPMENT
 # Image used during development / testing
 ################################
-FROM python-base AS web-development
-ENV FASTAPI_ENV=development
+FROM builder-web AS web-development
 WORKDIR $PYSETUP_PATH
 
 # copy in our built poetry + venv
-COPY --from=builder-web $POETRY_HOME $POETRY_HOME
-COPY --from=builder-web $PYSETUP_PATH $PYSETUP_PATH
+#COPY --from=builder-web $POETRY_HOME $POETRY_HOME
+#COPY --from=builder-web $PYSETUP_PATH $PYSETUP_PATH
 
 # quicker install as runtime deps are already installed
 RUN --mount=type=cache,target=/root/.cache \
-    poetry install --with=dev --extras "web"
+    poetry install --with=dev
 
-# copy tests
+# copy app + tests
 COPY ./src /app
 COPY ./tests /app/tests
 

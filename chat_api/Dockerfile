@@ -3,26 +3,25 @@
 # Used to build deps for this service
 ################################
 FROM builder-base AS builder-chat-api
-RUN --mount=type=cache,target=/root/.cache \
-    poetry install --extras "chat_api"
+COPY poetry.lock pyproject.toml ./
 
 ################################
 # DEVELOPMENT
 # Image used during development / testing
 ################################
-FROM python-base AS chat-api-development
+FROM builder-chat-api AS chat-api-development
 ENV FASTAPI_ENV=development
 WORKDIR $PYSETUP_PATH
 
 # copy in our built poetry + venv
-COPY --from=builder-chat-api $POETRY_HOME $POETRY_HOME
-COPY --from=builder-chat-api $PYSETUP_PATH $PYSETUP_PATH
+#COPY --from=builder-chat-api $POETRY_HOME $POETRY_HOME
+#COPY --from=builder-chat-api $PYSETUP_PATH $PYSETUP_PATH
 
 # quicker install as runtime deps are already installed
 RUN --mount=type=cache,target=/root/.cache \
-    poetry install --with=dev --extras "chat_api"
+    poetry install --with=dev
 
-# copy tests
+# copy app + tests
 COPY ./src /app
 COPY ./tests /app/tests
 
@@ -33,7 +32,7 @@ ENV PYTHONPATH="/app"
 # will become mountpoint of our code
 WORKDIR /app
 EXPOSE 8501
-CMD ["streamlit", "run", "app.py"]
+CMD ["uvicorn", "main:app", "--reload"]
 
 
 ################################
@@ -45,4 +44,4 @@ ENV FASTAPI_ENV=production
 COPY --from=builder-chat-api $PYSETUP_PATH $PYSETUP_PATH
 COPY ./src /app
 WORKDIR /app
-CMD ["streamlit", "run", "app.py"]
+CMD ["uvicorn", "main:app"]
