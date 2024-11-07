@@ -1,6 +1,5 @@
 {
     "python.pythonPath": "${workspaceFolder}/web/.venv/bin/python",
-    // "python.analysis.extraPaths": ["${workspaceFolder}/web/src"],
     "python.testing.pytestArgs": [
         "${workspaceFolder}/tests",
         "--import-mode=importlib"

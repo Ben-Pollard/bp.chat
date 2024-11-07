@@ -1,6 +1,8 @@
 {
     "python.pythonPath": "${workspaceFolder}/chat_api/.venv/bin/python",
-    // "python.analysis.extraPaths": ["${workspaceFolder}/chat_api/src"],
+    "python.analysis.extraPaths": [
+		"${workspaceFolder}/chat_api/src"
+	],
     "python.testing.pytestArgs": [
         "${workspaceFolder}/tests",
         "--import-mode=importlib"

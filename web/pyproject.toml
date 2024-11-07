@@ -17,6 +17,7 @@ init-hook = "import sys; sys.path.append('./web/src')"
 [tool.poetry.dependencies]
 python = "^3.12"
 streamlit = "^1.38.0"
+python-dotenv = "^1.0.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"

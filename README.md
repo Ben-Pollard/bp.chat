@@ -16,13 +16,13 @@ To set up the project, ensure you have Python 3.12 installed. Use Poetry to mana
 ## Running
 To run the chat server:
 ```powershell
-uvicorn --app-dir=chat_api src.main:app --reload
+uvicorn --app-dir=chat_api src.main:app --reload --env-file .env
 ```
 
 To run the Streamlit app, execute the following command:
 ```powershell
 cd web/src
-streamlit run .\src\app.py
+streamlit run app.py
 ```
 
 This will start a local server, and you can interact with the app through your web browser.
@@ -38,16 +38,10 @@ This will execute the test suite to ensure the chain invocation works as expecte
 
 ## Building and Running the Docker Image
 
-To build the Docker image, use the following command:
+To build and run the Docker images, use the following commands:
 ```powershell
-docker build -tbuilder-base -f Dockerfile.base .
-docker build --target chat-api-development -t chat-dev .\chat_api
-docker build --target web-development -t web-dev .\web
-```
-
-To run the app in the container, use:
-```powershell
-docker run --env OPENAI_API_KEY=$Env:OPENAI_API_KEY -p 8501:8501 chat-dev
+docker build --target builder-base -f Dockerfile.base .
+docker-compose up --build
 ```
 
 Or to run the unit tests in the container, use:

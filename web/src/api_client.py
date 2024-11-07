@@ -1,11 +1,24 @@
-import requests
-from typing import Dict, Iterable
 import json
+import os
+from typing import Dict, Iterable
+
+import requests
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 class ApiClient:
-    def __init__(self, base_url: str):
-        self.base_url = base_url
+
+    hostname = os.getenv("CHAT_API_HOSTNAME")
+    port = os.getenv("CHAT_API_PORT")
+
+    def __init__(self):
+        pass
+
+    @property
+    def base_url(self):
+        return f"http://{self.hostname}:{self.port}"
 
     def get_chat_response(self, user_input: str, session_id: int):
         return self.get_response("chat", user_input, session_id)

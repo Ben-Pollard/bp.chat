@@ -1,0 +1,24 @@
+services:
+  chat_api:
+    image: chat-dev
+    build:
+      context: .\chat_api
+      dockerfile: Dockerfile
+      target: chat-api-development
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    ports:
+      - "8000:8000"
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
+
+  web:
+    image: web-dev
+    build:
+      context: .\web
+      dockerfile: Dockerfile
+      target: web-development
+    ports:
+      - "8501:8501"
+    environment:
+      - CHAT_API_HOSTNAME=chat_api
+      - CHAT_API_PORT=8000

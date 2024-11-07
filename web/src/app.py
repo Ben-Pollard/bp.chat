@@ -7,8 +7,7 @@ The responses are streamed in real-time to the display.
 from typing import Dict, Iterable
 
 import streamlit as st
-from langchain_core.messages import AIMessage, HumanMessage
-
+from models import AIMessage, HumanMessage
 from api_client import ApiClient
 
 
@@ -16,7 +15,7 @@ class ChatApp:
     def __init__(self, session_id: int) -> None:
         """Initialize the ChatApp with a ChatAssistant and session state."""
         self.session_id = session_id
-        self.api_client = ApiClient(base_url="http://localhost:8000")
+        self.api_client = ApiClient()
         self.initialise_session_state()
 
         # layout
