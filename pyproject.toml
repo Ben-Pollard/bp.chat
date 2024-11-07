@@ -13,3 +13,6 @@ pytest = "^8.3.3"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pylint.master]
+init-hook = "import sys; sys.path.extend(['./web/src', './chat_api/src'])"

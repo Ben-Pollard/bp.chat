@@ -1,0 +1,13 @@
+{
+    "python.pythonPath": "${workspaceFolder}/web/.venv/bin/python",
+    // "python.analysis.extraPaths": ["${workspaceFolder}/web/src"],
+    "python.testing.pytestArgs": [
+        "${workspaceFolder}/tests",
+        "--import-mode=importlib"
+    ],
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": false,
+    "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter"
+  }
+}

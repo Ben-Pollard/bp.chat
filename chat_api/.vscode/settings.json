@@ -1,0 +1,13 @@
+{
+    "python.pythonPath": "${workspaceFolder}/chat_api/.venv/bin/python",
+    // "python.analysis.extraPaths": ["${workspaceFolder}/chat_api/src"],
+    "python.testing.pytestArgs": [
+        "${workspaceFolder}/tests",
+        "--import-mode=importlib"
+    ],
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": false,
+    "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter"
+  }
+}
