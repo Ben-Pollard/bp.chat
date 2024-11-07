@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 import streamlit as st
-from langchain_core.messages import AIMessage, HumanMessage
+from models import AIMessage, HumanMessage
 
 
 def test_human_message_input(chat_app, mock_get_response):
